@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>3 Saniye - Refleks Oyunu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="start-screen" class="screen active">
+      <div class="start-content">
+        <h1 class="game-title">3 Saniye</h1>
+        <p class="game-subtitle">Reflekslerini test et!</p>
+        <div class="instructions">
+          <p>Her turda sana bir mini görev verilecek.</p>
+          <p>Görevi tamamlamak için <strong>3 saniyen</strong> var.</p>
+          <p>Doğru yaparsan +1 puan!</p>
+          <p>Her 10 puanda süre azalır.</p>
+        </div>
+        <button id="start-btn" class="btn-primary">Başla</button>
+      </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+      <header id="game-header">
+        <div class="score-display">
+          <span class="score-label">Skor</span>
+          <span id="score" class="score-value">0</span>
+        </div>
+        <div class="timer-container">
+          <div id="timer-bar" class="timer-bar"></div>
+        </div>
+      </header>
+
+      <main id="game-main">
+        <div id="task-container" class="task-container">
+          <p id="task-text" class="task-text"></p>
+        </div>
+        <div id="task-area" class="task-area"></div>
+      </main>
+
+      <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div id="end-screen" class="screen">
+      <div class="end-content">
+        <h2 class="end-title">Oyun Bitti!</h2>
+        <div class="final-score">
+          <span class="final-label">Skorun</span>
+          <span id="final-score" class="final-value">0</span>
+        </div>
+        <div class="high-score">
+          <span class="high-label">En Yüksek Skor</span>
+          <span id="high-score" class="high-value">0</span>
+        </div>
+        <button id="retry-btn" class="btn-primary">Tekrar Dene</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
