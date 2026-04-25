@@ -1,24 +1,38 @@
 # 3 Saniye
 
-Reflekslerini test et! Her turda sana bir mini görev verilir ve tamamlamak için **3 saniyen** vardır. Doğru yaparsan +1 puan kazanır. Hata yaparsan veya süre dolarsa oyun biter.
+> Reflekslerini test et! Her turda bir mini görev, tamamlamak için 3 saniyen var.
+
+Tarayıcıda çalışan, HTML5/CSS3/vanilla JavaScript ile geliştirilmiş hızlı ve bağımlılık yapıcı bir refleks oyunu.
+
+## Canlı Demo
+
+Yakında eklenecek
 
 ## Nasıl Oynanır?
 
 1. **Başla** butonuna tıkla.
-2. Ekranda beliren mini görevi oku.
-3. Görevi süren dolmadan tamamla.
+2. Ekranda beliren görevi oku.
+3. Süre dolmadan doğru işlemi yap.
 4. Her doğru cevap +1 puan kazandırır.
 5. Her 10 puanda süre kısalır, oyun hızlanır.
 6. Yanlış cevap veya süre dolması = oyun biter.
 
+## Kontroller
+
+| Platform | Kontrol |
+|----------|---------|
+| Masaüstü | Mouse ile tıklama |
+| Mobil | Dokunmatik ekranda dokunma |
+| Swipe görevleri | Parmağı veya fareyi sola kaydırma |
+
 ## Özellikler
 
-- **10 farklı mini görev:** Renk eşleştirme, sayı karşılaştırma, kelime bulma, şekil yakalama, kaydırma ve daha fazlası
-- **Artan zorluk:** Skor yükseldikçe süre azalır
-- **Mobil uyumlu:** Dokunmatik ekran ve mouse desteği
-- **En yüksek skor:** LocalStorage ile kalıcı olarak saklanır
-- **Ses efektleri:** Web Audio API ile basit geri bildirim sesleri
-- **Akıcı animasyonlar:** Doğru/yanlış geri bildirim, süre çubuğu, sarsılma efekti
+- **10 farklı mini görev** — Renk eşleştirme, sayı karşılaştırma, kelime bulma, şekil yakalama, kaydırma ve daha fazlası
+- **Artan zorluk** — Skor yükseldikçe süre azalır
+- **Mobil uyumlu** — Dokunmatik ekran ve mouse desteği
+- **En yüksek skor** — LocalStorage ile kalıcı olarak saklanır
+- **Ses efektleri** — Web Audio API ile basit geri bildirim sesleri
+- **Akıcı animasyonlar** — Doğru/yanlış geri bildirim, süre çubuğu, sarsılma efekti
 
 ## Kullanılan Teknolojiler
 
@@ -32,14 +46,11 @@ Reflekslerini test et! Her turda sana bir mini görev verilir ve tamamlamak içi
 
 Herhangi bir kurulum gerekmez.
 
-1. Depoyu klonla veya ZIP olarak indir:
-   ```bash
-   git clone https://github.com/kullanici-adi/3-saniye.git
-   ```
-2. `index.html` dosyasını tarayıcında aç.
-3. Oynamaya başla!
+```bash
+git clone https://github.com/kullanici-adi/3-saniye.git
+```
 
-> **Not:** Oyun tamamen istemci tarafında çalışır, sunucu gerektirmez.
+`index.html` dosyasını tarayıcında aç ve oynamaya başla.
 
 ## Dosya Yapısı
 
@@ -49,17 +60,24 @@ Herhangi bir kurulum gerekmez.
 ├── style.css     # Responsive tasarım, animasyonlar, tema
 ├── script.js     # Oyun mantığı, GameManager, mini görevler
 ├── README.md     # Proje dokümantasyonu
+├── LICENSE       # MIT lisansı
 └── .gitignore    # Git için yoksayılacak dosyalar
 ```
+
+## Geliştirme Notları
+
+- Oyun tamamen istemci tarafında çalışır.
+- Herhangi bir backend gerektirmez.
+- En yüksek skor `localStorage` ile tarayıcıda saklanır.
+- Harici bağımlılık yoktur, framework kullanılmamıştır.
 
 ## Gelecekte Eklenebilecek Özellikler
 
 - [ ] Yeni mini görev türleri
-- [ ] Skor tablosu (global liderlik tablosu)
+- [ ] Global liderlik tablosu
 - [ ] Karanlık/aydınlık tema seçeneği
 - [ ] Özelleştirilebilir süre ayarları
-- [ ] Başarımlar (achievement) sistemi
-- [ ] Daha fazla ses efekti ve müzik
+- [ ] Başarım (achievement) sistemi
 - [ ] PWA desteği (çevrimdışı oynanabilirlik)
 - [ ] Çoklu dil desteği
 
