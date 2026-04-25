@@ -64,6 +64,12 @@ git clone https://github.com/kullanici-adi/3-saniye.git
 └── .gitignore    # Git için yoksayılacak dosyalar
 ```
 
+## Geliştirme Durumu
+
+| Sprint | Açıklama | Durum |
+|--------|----------|-------|
+| Sprint 1 | Kod temizliği ve oyun akışı iyileştirmeleri | Tamamlandı |
+
 ## Geliştirme Notları
 
 - Oyun tamamen istemci tarafında çalışır.
