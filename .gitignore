@@ -1,0 +1,31 @@
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# IDE / Editör
+.vscode/settings.json
+.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Log
+*.log
+logs/
+
+# Ortam değişkenleri
+.env
+.env.local
+.env.*.local
+
+# Derleme / Dağıtım
+dist/
+build/
+out/
+
+# Önbellek
+*.cache

@@ -1,0 +1,467 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #1a1a2e;
+  --surface-color: #16213e;
+  --primary-color: #0f3460;
+  --accent-color: #e94560;
+  --text-color: #eee;
+  --text-muted: #aaa;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --timer-bg: #333;
+  --border-radius: 12px;
+  --transition-speed: 0.2s;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#app {
+  width: 100%;
+  max-width: 500px;
+  height: 100vh;
+  max-height: 900px;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Start Screen */
+#start-screen {
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--surface-color) 100%);
+}
+
+.start-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.game-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.game-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.instructions {
+  background: var(--surface-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.instructions p {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.instructions p:last-child {
+  margin-bottom: 0;
+}
+
+.instructions strong {
+  color: var(--accent-color);
+}
+
+/* Game Screen */
+#game-screen {
+  background: var(--bg-color);
+}
+
+#game-header {
+  padding: 1rem;
+  background: var(--surface-color);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.score-display {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.score-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.score-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.timer-container {
+  width: 100%;
+  height: 8px;
+  background: var(--timer-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--success-color), #8bc34a);
+  border-radius: 4px;
+  transition: width 0.1s linear, background 0.3s ease;
+}
+
+.timer-bar.warning {
+  background: linear-gradient(90deg, #ff9800, #ffc107);
+}
+
+.timer-bar.danger {
+  background: linear-gradient(90deg, var(--error-color), #ff5722);
+}
+
+#game-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.task-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+.task-area {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Task Elements */
+.task-box {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  border: 3px solid transparent;
+}
+
+.task-box:active {
+  transform: scale(0.95);
+}
+
+.task-box:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.task-number {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--surface-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, background var(--transition-speed) ease;
+  border: 2px solid var(--primary-color);
+}
+
+.task-number:active {
+  transform: scale(0.9);
+}
+
+.task-number:hover {
+  background: var(--primary-color);
+}
+
+.task-word {
+  padding: 0.75rem 1.25rem;
+  background: var(--surface-color);
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, background var(--transition-speed) ease;
+  border: 2px solid var(--primary-color);
+}
+
+.task-word:active {
+  transform: scale(0.95);
+}
+
+.task-word:hover {
+  background: var(--primary-color);
+}
+
+.task-shape {
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease;
+}
+
+.task-shape:active {
+  transform: scale(0.9);
+}
+
+.swipe-area {
+  width: 100%;
+  height: 150px;
+  background: var(--surface-color);
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  color: var(--text-muted);
+  border: 2px dashed var(--primary-color);
+}
+
+.growing-shape {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.05s linear;
+}
+
+/* Feedback */
+.feedback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.feedback.correct {
+  background: rgba(76, 175, 80, 0.3);
+  opacity: 1;
+}
+
+.feedback.wrong {
+  background: rgba(244, 67, 54, 0.3);
+  opacity: 1;
+}
+
+/* Shake Animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 0.3s ease;
+}
+
+/* End Screen */
+#end-screen {
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--surface-color) 100%);
+}
+
+.end-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.end-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+}
+
+.final-score {
+  margin-bottom: 1rem;
+}
+
+.final-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.final-value {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--text-color);
+}
+
+.high-score {
+  margin-bottom: 2rem;
+}
+
+.high-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.high-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+/* Buttons */
+.btn-primary {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background: var(--accent-color);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .game-title {
+    font-size: 2.5rem;
+  }
+
+  .task-text {
+    font-size: 1.1rem;
+  }
+
+  .task-box {
+    width: 65px;
+    height: 65px;
+  }
+
+  .task-number {
+    width: 60px;
+    height: 60px;
+    font-size: 1.3rem;
+  }
+
+  .task-word {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+  }
+
+  .final-value {
+    font-size: 3rem;
+  }
+}
+
+@media (min-height: 700px) {
+  .task-box {
+    width: 90px;
+    height: 90px;
+  }
+
+  .task-number {
+    width: 80px;
+    height: 80px;
+    font-size: 1.8rem;
+  }
+}
+
+/* Swipe hint animation */
+@keyframes swipeHint {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-30px); }
+  100% { transform: translateX(0); }
+}
+
+.swipe-hint {
+  animation: swipeHint 1s ease-in-out infinite;
+}
