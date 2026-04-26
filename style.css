@@ -285,6 +285,15 @@ h2 {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+.color-word {
+  flex-basis: 100%;
+  margin-bottom: 4px;
+  text-align: center;
+  font-size: clamp(2.2rem, 13vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
 .shape {
   width: 82px;
   height: 82px;
@@ -328,6 +337,15 @@ h2 {
 @keyframes growPulse {
   from { transform: scale(0.78); }
   to { transform: scale(1.35); }
+}
+
+.blink-target {
+  animation: softBlink 720ms ease-in-out infinite;
+}
+
+@keyframes softBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.42; }
 }
 
 .swipe-pad {

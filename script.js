@@ -57,6 +57,13 @@ const WORD_SETS = [
   { wrong: "arkadaşş", correct: ["arkadaş", "oyun", "şehir"] }
 ];
 
+const DIRECTIONS = [
+  { name: "sola", label: "<-", value: "left" },
+  { name: "sağa", label: "->", value: "right" },
+  { name: "yukarı", label: "^", value: "up" },
+  { name: "aşağı", label: "v", value: "down" }
+];
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -122,9 +129,86 @@ function uniqueNumbers(count, min, max) {
   return [...values];
 }
 
+function getSwipeDirection(diffX, diffY) {
+  const absX = Math.abs(diffX);
+  const absY = Math.abs(diffY);
+  if (absX < CONFIG.minimumSwipeDistance && absY < CONFIG.minimumSwipeDistance) return null;
+  if (absX > absY * 1.3) return diffX < 0 ? "left" : "right";
+  if (absY > absX * 1.3) return diffY < 0 ? "up" : "down";
+  return null;
+}
+
+function renderSwipePad(area, label, expectedDirection) {
+  const pad = document.createElement("div");
+  pad.className = "swipe-pad";
+  pad.innerHTML = `<span>${label}</span>`;
+  area.appendChild(pad);
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+  let processed = false;
+
+  const getPoint = (event) => {
+    const source = event.changedTouches ? event.changedTouches[0] : event;
+    return { x: source.clientX, y: source.clientY };
+  };
+
+  const startSwipe = (event) => {
+    if (state.inputLocked || !state.isPlaying) return;
+    const point = getPoint(event);
+    tracking = true;
+    processed = false;
+    startX = point.x;
+    startY = point.y;
+  };
+
+  const moveSwipe = (event) => {
+    if (!tracking || state.inputLocked || !state.isPlaying) return;
+    if (event.cancelable) event.preventDefault();
+  };
+
+  const finishSwipe = (event) => {
+    if (!tracking || processed || state.inputLocked || !state.isPlaying) return;
+    tracking = false;
+
+    const point = getPoint(event);
+    const direction = getSwipeDirection(point.x - startX, point.y - startY);
+    if (!direction) return;
+
+    processed = true;
+    checkAnswer(direction === expectedDirection);
+  };
+
+  const cancelSwipe = () => {
+    tracking = false;
+  };
+
+  pad.addEventListener("touchstart", startSwipe, { passive: true });
+  pad.addEventListener("touchmove", moveSwipe, { passive: false });
+  pad.addEventListener("touchend", finishSwipe, { passive: false });
+  pad.addEventListener("touchcancel", cancelSwipe);
+  pad.addEventListener("mousedown", startSwipe);
+  pad.addEventListener("mousemove", moveSwipe);
+  pad.addEventListener("mouseup", finishSwipe);
+  pad.addEventListener("mouseleave", cancelSwipe);
+
+  state.swipeCleanup = () => {
+    pad.removeEventListener("touchstart", startSwipe);
+    pad.removeEventListener("touchmove", moveSwipe);
+    pad.removeEventListener("touchend", finishSwipe);
+    pad.removeEventListener("touchcancel", cancelSwipe);
+    pad.removeEventListener("mousedown", startSwipe);
+    pad.removeEventListener("mousemove", moveSwipe);
+    pad.removeEventListener("mouseup", finishSwipe);
+    pad.removeEventListener("mouseleave", cancelSwipe);
+  };
+}
+
 const tasks = [
   {
     id: "avoid-red",
+    difficulty: "easy",
     title: "Kırmızıya dokunma",
     render(area) {
       const safeColors = COLORS.filter((color) => color.code !== "red");
@@ -134,6 +218,7 @@ const tasks = [
   },
   {
     id: "smallest-number",
+    difficulty: "easy",
     title: "En küçük sayıyı seç",
     render(area) {
       const numbers = uniqueNumbers(randomInt(3, 4), 1, 99);
@@ -143,6 +228,7 @@ const tasks = [
   },
   {
     id: "largest-number",
+    difficulty: "easy",
     title: "En büyük sayıyı seç",
     render(area) {
       const numbers = uniqueNumbers(randomInt(3, 4), 1, 99);
@@ -152,6 +238,7 @@ const tasks = [
   },
   {
     id: "misspelled-word",
+    difficulty: "medium",
     title: "Yanlış yazılmış kelimeyi bul",
     render(area) {
       const set = pick(WORD_SETS);
@@ -164,6 +251,7 @@ const tasks = [
   },
   {
     id: "swipe-left",
+    difficulty: "medium",
     title: "Ekranı sola kaydır",
     render(area) {
       const pad = document.createElement("div");
@@ -245,6 +333,7 @@ const tasks = [
   },
   {
     id: "even-number",
+    difficulty: "easy",
     title: "Sadece çift sayılara dokun",
     render(area) {
       const evens = uniqueNumbers(2, 1, 25).map((number) => number * 2);
@@ -256,6 +345,7 @@ const tasks = [
   },
   {
     id: "not-blue",
+    difficulty: "easy",
     title: "Mavi olmayanı seç",
     render(area) {
       const blue = COLORS.find((color) => color.code === "blue");
@@ -271,6 +361,7 @@ const tasks = [
   },
   {
     id: "fastest-growing",
+    difficulty: "hard",
     title: "En hızlı büyüyen şekli yakala",
     render(area) {
       const answerIndex = randomInt(0, 3);
@@ -283,6 +374,7 @@ const tasks = [
   },
   {
     id: "match-shape",
+    difficulty: "easy",
     title: "",
     render(area) {
       const target = pick(SHAPES);
@@ -294,6 +386,7 @@ const tasks = [
   },
   {
     id: "match-color",
+    difficulty: "medium",
     title: "",
     render(area) {
       const target = pick(COLORS);
@@ -302,6 +395,119 @@ const tasks = [
         area.appendChild(makeShape(SHAPES[index % SHAPES.length].type, color.value, color.code === target.code));
       });
       return `${target.name} rengi seç`;
+    }
+  },
+  {
+    id: "odd-number",
+    difficulty: "easy",
+    title: "Tek sayıyı seç",
+    render(area) {
+      const odds = uniqueNumbers(2, 0, 24).map((number) => number * 2 + 1);
+      const evens = uniqueNumbers(2, 1, 25).map((number) => number * 2);
+      shuffle([...odds, ...evens]).forEach((number) => {
+        area.appendChild(makeOption(number, number % 2 === 1));
+      });
+    }
+  },
+  {
+    id: "missing-number",
+    difficulty: "medium",
+    title: "",
+    render(area) {
+      const start = randomInt(1, 5);
+      const step = randomInt(2, 4);
+      const missingIndex = randomInt(1, 2);
+      const sequence = [0, 1, 2, 3].map((index) => start + index * step);
+      const answer = sequence[missingIndex];
+      const label = sequence.map((number, index) => (index === missingIndex ? "?" : number)).join(", ");
+      const options = shuffle([answer, answer - step, answer + step, answer + step * 2]);
+
+      options.forEach((number) => {
+        area.appendChild(makeOption(number, number === answer));
+      });
+
+      return `Eksik sayıyı bul: ${label}`;
+    }
+  },
+  {
+    id: "odd-shape-out",
+    difficulty: "medium",
+    title: "Eşleşmeyen şekli seç",
+    render(area) {
+      const common = pick(SHAPES);
+      const different = pick(SHAPES.filter((shape) => shape.type !== common.type));
+      const items = shuffle([
+        { shape: common, correct: false },
+        { shape: common, correct: false },
+        { shape: common, correct: false },
+        { shape: different, correct: true }
+      ]);
+
+      items.forEach((item, index) => {
+        area.appendChild(makeShape(item.shape.type, COLORS[index].value, item.correct));
+      });
+    }
+  },
+  {
+    id: "odd-color-out",
+    difficulty: "easy",
+    title: "Eşleşmeyen rengi seç",
+    render(area) {
+      const common = pick(COLORS);
+      const different = pick(COLORS.filter((color) => color.code !== common.code));
+      const items = shuffle([common, common, common, different]);
+
+      items.forEach((color) => {
+        area.appendChild(makeColorBox(color, color.code === different.code));
+      });
+    }
+  },
+  {
+    id: "catch-blinker",
+    difficulty: "hard",
+    title: "Yanıp söneni yakala",
+    render(area) {
+      const answerIndex = randomInt(0, 3);
+      for (let index = 0; index < 4; index += 1) {
+        const box = makeColorBox(COLORS[index + 1], index === answerIndex);
+        if (index === answerIndex) box.classList.add("blink-target");
+        area.appendChild(box);
+      }
+    }
+  },
+  {
+    id: "word-color",
+    difficulty: "hard",
+    title: "Kelimenin rengini seç",
+    render(area) {
+      const wordColor = pick(COLORS);
+      const textColor = pick(COLORS.filter((color) => color.code !== wordColor.code));
+      const word = document.createElement("div");
+      word.className = "color-word";
+      word.textContent = wordColor.name.toUpperCase();
+      word.style.color = textColor.value;
+      area.appendChild(word);
+
+      const options = shuffle([textColor, ...shuffle(COLORS.filter((color) => color.code !== textColor.code)).slice(0, 3)]);
+      options.forEach((color) => {
+        area.appendChild(makeColorBox(color, color.code === textColor.code));
+      });
+    }
+  },
+  {
+    id: "direction-swipe",
+    difficulty: "hard",
+    title: "",
+    render(area) {
+      const direction = pick(DIRECTIONS);
+      renderSwipePad(area, `${direction.label} ${direction.name} kaydır`, direction.value);
+      return `${direction.name} kaydır`;
+    },
+    cleanup() {
+      if (state.swipeCleanup) {
+        state.swipeCleanup();
+        state.swipeCleanup = null;
+      }
     }
   }
 ];
@@ -337,10 +543,36 @@ function getTimeLimit() {
   return Math.max(CONFIG.minTimeLimit, time);
 }
 
+function getDifficultyWeights() {
+  if (state.score < 10) {
+    return { easy: 8, medium: 2, hard: 0 };
+  }
+
+  if (state.score < 25) {
+    return { easy: 4, medium: 5, hard: 1 };
+  }
+
+  return { easy: 2, medium: 4, hard: 4 };
+}
+
+function pickWeightedTask(pool) {
+  const weights = getDifficultyWeights();
+  const weightedPool = [];
+
+  pool.forEach((task) => {
+    const weight = weights[task.difficulty] ?? 1;
+    for (let index = 0; index < weight; index += 1) {
+      weightedPool.push(task);
+    }
+  });
+
+  return pick(weightedPool.length ? weightedPool : pool);
+}
+
 function pickTask() {
   const available = tasks.filter((task) => !state.recentTasks.includes(task.id));
   const pool = available.length ? available : tasks;
-  const task = pick(pool);
+  const task = pickWeightedTask(pool);
   state.recentTasks.push(task.id);
   while (state.recentTasks.length > CONFIG.maxRecentTasks) {
     state.recentTasks.shift();

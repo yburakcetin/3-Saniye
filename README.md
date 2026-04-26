@@ -21,7 +21,8 @@ Her turda kısa bir mini görev gelir. Oyuncunun görevi tamamlamak için başla
 
 ## Özellikler
 
-- 10 farklı mini görev
+- 17 farklı mini görev
+- Easy, medium ve hard seviyeleriyle dengelenen görev seçimi
 - Skora göre hızlanan süre sistemi
 - En yüksek skor kaydı
 - Ana menü, oyun, nasıl oynanır, ayarlar ve oyun bitti ekranları
@@ -72,6 +73,7 @@ Kurulum gerekmez. Proje dosyalarını indirip `index.html` dosyasını tarayıc�
 
 - Sprint 1: Kod temizliği ve oyun akışı iyileştirmeleri
 - Sprint 2: Ana menü, ayarlar, ses ve titreşim kontrolleri
+- Sprint 3: Yeni mini görevler ve görev zorluk sistemi
 
 ## Gelecekte Eklenebilecek Özellikler
 
