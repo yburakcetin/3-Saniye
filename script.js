@@ -6,7 +6,9 @@ const CONFIG = {
   feedbackDuration: 250,
   maxRecentTasks: 2,
   timerFrameMs: 40,
-  minimumSwipeDistance: 50
+  minimumSwipeDistance: 50,
+  scorePopupDuration: 640,
+  motivationDuration: 900
 };
 
 const STORAGE_KEYS = {
@@ -28,7 +30,14 @@ const state = {
   soundEnabled: true,
   vibrationEnabled: true,
   audioContext: null,
-  swipeCleanup: null
+  swipeCleanup: null,
+  currentCombo: 0,
+  maxCombo: 0,
+  currentLevel: 1,
+  totalCorrectAnswers: 0,
+  finalScore: 0,
+  scorePopupTimer: null,
+  motivationTimer: null
 };
 
 const dom = {};
@@ -543,6 +552,77 @@ function getTimeLimit() {
   return Math.max(CONFIG.minTimeLimit, time);
 }
 
+function calculateScoreGain(combo) {
+  if (combo >= 15) return 4;
+  if (combo >= 10) return 3;
+  if (combo >= 5) return 2;
+  return 1;
+}
+
+function getLevel(score) {
+  if (score >= 50) return 4;
+  if (score >= 25) return 3;
+  if (score >= 10) return 2;
+  return 1;
+}
+
+function resetSessionStats() {
+  state.score = 0;
+  state.currentCombo = 0;
+  state.maxCombo = 0;
+  state.currentLevel = 1;
+  state.totalCorrectAnswers = 0;
+  state.finalScore = 0;
+}
+
+function updateGameStats() {
+  state.currentLevel = getLevel(state.score);
+  dom.score.textContent = state.score;
+  dom.combo.textContent = `x${state.currentCombo}`;
+  dom.level.textContent = state.currentLevel;
+}
+
+function showScoreGain(gain) {
+  if (state.scorePopupTimer) {
+    window.clearTimeout(state.scorePopupTimer);
+  }
+
+  dom.scorePopup.textContent = `+${gain}`;
+  dom.scorePopup.classList.remove("hidden", "show");
+  void dom.scorePopup.offsetWidth;
+  dom.scorePopup.classList.add("show");
+
+  state.scorePopupTimer = window.setTimeout(() => {
+    dom.scorePopup.classList.add("hidden");
+    dom.scorePopup.classList.remove("show");
+  }, CONFIG.scorePopupDuration);
+}
+
+function showMotivation(combo) {
+  const messages = {
+    5: "Seri başladı!",
+    10: "Çok iyi!",
+    15: "Mükemmel!",
+    20: "Durdurulamıyor!"
+  };
+  const message = messages[combo];
+  if (!message) return;
+
+  if (state.motivationTimer) {
+    window.clearTimeout(state.motivationTimer);
+  }
+
+  dom.motivationMessage.textContent = message;
+  dom.motivationMessage.classList.remove("hidden");
+  void dom.motivationMessage.offsetWidth;
+  dom.motivationMessage.classList.add("show");
+
+  state.motivationTimer = window.setTimeout(() => {
+    dom.motivationMessage.classList.remove("show");
+    dom.motivationMessage.classList.add("hidden");
+  }, CONFIG.motivationDuration);
+}
+
 function getDifficultyWeights() {
   if (state.score < 10) {
     return { easy: 8, medium: 2, hard: 0 };
@@ -594,12 +674,20 @@ function startGame() {
   playSound("start");
   vibrate(20);
   cleanupCurrentTask();
-  state.score = 0;
+  resetSessionStats();
+  if (state.scorePopupTimer) window.clearTimeout(state.scorePopupTimer);
+  if (state.motivationTimer) window.clearTimeout(state.motivationTimer);
+  state.scorePopupTimer = null;
+  state.motivationTimer = null;
   state.recentTasks = [];
   state.isPlaying = true;
   state.inputLocked = false;
-  dom.score.textContent = "0";
   dom.recordLabel.classList.add("hidden");
+  dom.scorePopup.classList.add("hidden");
+  dom.scorePopup.classList.remove("show");
+  dom.motivationMessage.classList.add("hidden");
+  dom.motivationMessage.classList.remove("show");
+  updateGameStats();
   showScreen("game");
   nextTask();
 }
@@ -628,8 +716,14 @@ function checkAnswer(isCorrect) {
   stopTimer();
 
   if (isCorrect) {
-    state.score += 1;
-    dom.score.textContent = state.score;
+    state.currentCombo += 1;
+    state.maxCombo = Math.max(state.maxCombo, state.currentCombo);
+    state.totalCorrectAnswers += 1;
+    const gain = calculateScoreGain(state.currentCombo);
+    state.score += gain;
+    updateGameStats();
+    showScoreGain(gain);
+    showMotivation(state.currentCombo);
     showFeedback("correct");
     playSound("correct");
     vibrate(30);
@@ -637,6 +731,8 @@ function checkAnswer(isCorrect) {
     return;
   }
 
+  state.currentCombo = 0;
+  updateGameStats();
   showFeedback("wrong");
   playSound("wrong");
   vibrate([80, 40, 80]);
@@ -665,6 +761,8 @@ function startTimer() {
 
     if (remainingRatio <= 0) {
       state.inputLocked = true;
+      state.currentCombo = 0;
+      updateGameStats();
       showFeedback("wrong");
       playSound("wrong");
       vibrate([80, 40, 80]);
@@ -697,6 +795,8 @@ function endGame() {
   state.isPlaying = false;
   state.inputLocked = true;
   cleanupCurrentTask();
+  state.finalScore = state.score;
+  state.currentLevel = getLevel(state.finalScore);
 
   const isRecord = state.score > state.highScore;
   if (isRecord) {
@@ -704,7 +804,9 @@ function endGame() {
     localStorage.setItem(STORAGE_KEYS.highScore, String(state.highScore));
   }
 
-  dom.finalScore.textContent = state.score;
+  dom.finalScore.textContent = state.finalScore;
+  dom.finalMaxCombo.textContent = `x${state.maxCombo}`;
+  dom.finalLevel.textContent = state.currentLevel;
   dom.recordLabel.classList.toggle("hidden", !isRecord);
   updateHighScoreViews();
   showScreen("gameOver");
@@ -714,6 +816,8 @@ function goMenu() {
   state.isPlaying = false;
   state.inputLocked = true;
   cleanupCurrentTask();
+  state.currentCombo = 0;
+  updateGameStats();
   updateHighScoreViews();
   showScreen("menu");
 }
@@ -773,11 +877,17 @@ function initDom() {
     gameOver: document.getElementById("game-over-screen")
   };
   dom.score = document.getElementById("score");
+  dom.combo = document.getElementById("combo");
+  dom.level = document.getElementById("level");
   dom.finalScore = document.getElementById("final-score");
+  dom.finalMaxCombo = document.getElementById("final-max-combo");
+  dom.finalLevel = document.getElementById("final-level");
   dom.taskTitle = document.getElementById("task-title");
   dom.taskArea = document.getElementById("task-area");
   dom.timerBar = document.getElementById("timer-bar");
   dom.feedback = document.getElementById("feedback");
+  dom.scorePopup = document.getElementById("score-popup");
+  dom.motivationMessage = document.getElementById("motivation-message");
   dom.recordLabel = document.getElementById("record-label");
   dom.soundToggle = document.getElementById("sound-toggle");
   dom.vibrationToggle = document.getElementById("vibration-toggle");
@@ -810,5 +920,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initDom();
   bindEvents();
   loadSettings();
+  updateGameStats();
   showScreen("menu");
 });

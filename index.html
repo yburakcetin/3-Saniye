@@ -29,6 +29,14 @@
           <strong id="score">0</strong>
         </div>
         <div>
+          <span>Combo</span>
+          <strong id="combo">x0</strong>
+        </div>
+        <div>
+          <span>Seviye</span>
+          <strong id="level">1</strong>
+        </div>
+        <div>
           <span>Rekor</span>
           <strong data-high-score>0</strong>
         </div>
@@ -40,6 +48,8 @@
       </div>
 
       <section class="task-shell">
+        <div id="motivation-message" class="motivation-message hidden"></div>
+        <div id="score-popup" class="score-popup hidden"></div>
         <p id="task-title" class="task-title">Hazır mısın?</p>
         <div id="task-area" class="task-area"></div>
       </section>
@@ -78,7 +88,7 @@
 
     <section id="game-over-screen" class="screen">
       <div class="panel">
-        <p id="record-label" class="kicker hidden">Yeni rekor!</p>
+        <p id="record-label" class="kicker hidden">Yeni Rekor!</p>
         <h2>Oyun Bitti</h2>
         <div class="result-grid">
           <div>
@@ -88,6 +98,14 @@
           <div>
             <span>En yüksek skor</span>
             <strong data-high-score>0</strong>
+          </div>
+          <div>
+            <span>Maksimum combo</span>
+            <strong id="final-max-combo">x0</strong>
+          </div>
+          <div>
+            <span>Ulaşılan seviye</span>
+            <strong id="final-level">1</strong>
           </div>
         </div>
         <div class="button-stack">
