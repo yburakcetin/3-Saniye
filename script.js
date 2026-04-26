@@ -744,12 +744,27 @@ function applyTranslations() {
   }
 }
 
+function getInitialLanguage() {
+  const savedLanguage = localStorage.getItem(STORAGE_KEYS.language);
+  if (savedLanguage === "tr" || savedLanguage === "en") {
+    return savedLanguage;
+  }
+
+  const browserLanguages = navigator.languages && navigator.languages.length
+    ? navigator.languages
+    : [navigator.language || "en"];
+  const isTurkish = browserLanguages.some((language) =>
+    String(language).toLowerCase().startsWith("tr")
+  );
+
+  return isTurkish ? "tr" : "en";
+}
+
 function loadSettings() {
   state.highScore = Number(localStorage.getItem(STORAGE_KEYS.highScore) || 0);
   state.soundEnabled = localStorage.getItem(STORAGE_KEYS.sound) !== "false";
   state.vibrationEnabled = localStorage.getItem(STORAGE_KEYS.vibration) !== "false";
-  const savedLanguage = localStorage.getItem(STORAGE_KEYS.language);
-  state.language = translations[savedLanguage] ? savedLanguage : "tr";
+  state.language = getInitialLanguage();
   dom.soundToggle.checked = state.soundEnabled;
   dom.vibrationToggle.checked = state.vibrationEnabled;
   dom.languageSelect.value = state.language;
