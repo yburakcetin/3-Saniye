@@ -1,96 +1,91 @@
 # 3 Saniye
 
-> Reflekslerini test et! Her turda bir mini görev, tamamlamak için 3 saniyen var.
-
-Tarayıcıda çalışan, HTML5/CSS3/vanilla JavaScript ile geliştirilmiş hızlı ve bağımlılık yapıcı bir refleks oyunu.
+Tarayıcıda çalışan, HTML5/CSS3/vanilla JavaScript ile geliştirilmiş hızlı bir refleks ve dikkat oyunu.
 
 ## Canlı Demo
 
 Yakında eklenecek
 
-## Nasıl Oynanır?
+## Kısa Açıklama
 
-1. **Başla** butonuna tıkla.
-2. Ekranda beliren görevi oku.
-3. Süre dolmadan doğru işlemi yap.
-4. Her doğru cevap +1 puan kazandırır.
-5. Her 10 puanda süre kısalır, oyun hızlanır.
-6. Yanlış cevap veya süre dolması = oyun biter.
+Her turda kısa bir mini görev gelir. Oyuncunun görevi tamamlamak için başlangıçta 3 saniyesi vardır. Doğru cevap +1 puan kazandırır; yanlış cevap veya süre dolması oyunu bitirir.
 
-## Kontroller
+## Nasıl Oynanır
 
-| Platform | Kontrol |
-|----------|---------|
-| Masaüstü | Mouse ile tıklama |
-| Mobil | Dokunmatik ekranda dokunma |
-| Swipe görevleri | Parmağı veya fareyi sola kaydırma |
+1. Ana menüden **Başla** butonuna bas.
+2. Ekrandaki görevi oku.
+3. Süre dolmadan doğru seçimi yap.
+4. Her doğru cevapta skorun 1 artar.
+5. Yanlış cevap verirsen veya süre dolarsa oyun biter.
+6. Her 10 puanda oyun biraz daha hızlanır.
 
 ## Özellikler
 
-- **10 farklı mini görev** — Renk eşleştirme, sayı karşılaştırma, kelime bulma, şekil yakalama, kaydırma ve daha fazlası
-- **Artan zorluk** — Skor yükseldikçe süre azalır
-- **Mobil uyumlu** — Dokunmatik ekran ve mouse desteği
-- **En yüksek skor** — LocalStorage ile kalıcı olarak saklanır
-- **Ses efektleri** — Web Audio API ile basit geri bildirim sesleri
-- **Akıcı animasyonlar** — Doğru/yanlış geri bildirim, süre çubuğu, sarsılma efekti
+- 10 farklı mini görev
+- Skora göre hızlanan süre sistemi
+- En yüksek skor kaydı
+- Ana menü, oyun, nasıl oynanır, ayarlar ve oyun bitti ekranları
+- Ses aç/kapat ayarı
+- Titreşim aç/kapat ayarı
+- Mouse, tap ve swipe desteği
+- Dış kütüphane veya build sistemi gerektirmez
+
+## Kontroller
+
+- Masaüstü: Mouse ile tıklama
+- Mobil: Dokunarak seçim yapma
+- Swipe görevi: Ekranı sola kaydırma
 
 ## Kullanılan Teknolojiler
 
 - HTML5
-- CSS3 (Flexbox, Animasyonlar, Responsive Tasarım)
-- Vanilla JavaScript (ES6+)
-- Web Audio API
+- CSS3
+- Vanilla JavaScript
 - LocalStorage API
+- Web Audio API
+- Vibration API
 
 ## Kurulum ve Çalıştırma
 
-Herhangi bir kurulum gerekmez.
+Kurulum gerekmez. Proje dosyalarını indirip `index.html` dosyasını tarayıcıda açman yeterlidir.
 
-```bash
-git clone https://github.com/kullanici-adi/3-saniye.git
+```text
+3-saniye/
+├── index.html
+├── style.css
+├── script.js
+├── README.md
+├── LICENSE
+└── .gitignore
 ```
-
-`index.html` dosyasını tarayıcında aç ve oynamaya başla.
 
 ## Dosya Yapısı
 
-```
-3-saniye/
-├── index.html    # Ana HTML yapısı ve ekranlar
-├── style.css     # Responsive tasarım, animasyonlar, tema
-├── script.js     # Oyun mantığı, GameManager, mini görevler
-├── README.md     # Proje dokümantasyonu
-├── LICENSE       # MIT lisansı
-└── .gitignore    # Git için yoksayılacak dosyalar
-```
+- `index.html`: Ekranların HTML yapısı
+- `style.css`: Responsive arayüz, animasyonlar ve oyun görünümü
+- `script.js`: Oyun döngüsü, görev sistemi, ayarlar ve geri bildirimler
+- `README.md`: Proje dokümantasyonu
+- `LICENSE`: MIT lisansı
+- `.gitignore`: Git dışında bırakılacak dosyalar
 
 ## Geliştirme Durumu
 
-| Sprint | Açıklama | Durum |
-|--------|----------|-------|
-| Sprint 1 | Kod temizliği ve oyun akışı iyileştirmeleri | Tamamlandı |
-
-## Geliştirme Notları
-
-- Oyun tamamen istemci tarafında çalışır.
-- Herhangi bir backend gerektirmez.
-- En yüksek skor `localStorage` ile tarayıcıda saklanır.
-- Harici bağımlılık yoktur, framework kullanılmamıştır.
+- Sprint 1: Kod temizliği ve oyun akışı iyileştirmeleri
+- Sprint 2: Ana menü, ayarlar, ses ve titreşim kontrolleri
 
 ## Gelecekte Eklenebilecek Özellikler
 
-- [ ] Yeni mini görev türleri
-- [ ] Global liderlik tablosu
-- [ ] Karanlık/aydınlık tema seçeneği
-- [ ] Özelleştirilebilir süre ayarları
-- [ ] Başarım (achievement) sistemi
-- [ ] PWA desteği (çevrimdışı oynanabilirlik)
-- [ ] Çoklu dil desteği
+- Yeni mini görevler
+- Zorluk modu seçimi
+- Tema seçenekleri
+- Başarım sistemi
+- Günlük en iyi skor
+- PWA desteği
 
 ## Ekran Görüntüleri
 
-> Ekran görüntüleri buraya eklenecek.
+Ekran görüntüleri daha sonra eklenecek.
 
 ## Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+Bu proje MIT lisansı ile lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
