@@ -10,14 +10,14 @@
   <main class="app" aria-live="polite">
     <section id="menu-screen" class="screen active">
       <div class="panel menu-panel">
-        <p class="kicker">Refleks ve dikkat oyunu</p>
+        <p class="kicker" data-i18n="gameTagline">REFLEKS VE DİKKAT OYUNU</p>
         <h1>3 Saniye</h1>
-        <p class="lead">Her görevi 3 saniye içinde tamamla.</p>
-        <div class="score-chip">En yüksek skor: <strong data-high-score>0</strong></div>
+        <p class="lead" data-i18n="menuDescription">Her görevi 3 saniye içinde tamamla.</p>
+        <div class="score-chip"><span data-i18n="highScore">En yüksek skor</span>: <strong data-high-score>0</strong></div>
         <div class="button-stack">
-          <button class="btn primary" id="start-btn" type="button">Başla</button>
-          <button class="btn" id="how-to-btn" type="button">Nasıl Oynanır</button>
-          <button class="btn" id="settings-btn" type="button">Ayarlar</button>
+          <button class="btn primary" id="start-btn" type="button" data-i18n="start">Başla</button>
+          <button class="btn" id="how-to-btn" type="button" data-i18n="howToPlay">Nasıl Oynanır</button>
+          <button class="btn" id="settings-btn" type="button" data-i18n="settings">Ayarlar</button>
         </div>
       </div>
     </section>
@@ -25,19 +25,19 @@
     <section id="game-screen" class="screen">
       <header class="game-header">
         <div>
-          <span>Skor</span>
+          <span data-i18n="score">Skor</span>
           <strong id="score">0</strong>
         </div>
         <div>
-          <span>Combo</span>
+          <span data-i18n="combo">Combo</span>
           <strong id="combo">x0</strong>
         </div>
         <div>
-          <span>Seviye</span>
+          <span data-i18n="level">Seviye</span>
           <strong id="level">1</strong>
         </div>
         <div>
-          <span>Rekor</span>
+          <span data-i18n="record">Rekor</span>
           <strong data-high-score>0</strong>
         </div>
         <button class="icon-btn" id="game-menu-btn" type="button" aria-label="Ana menü">×</button>
@@ -59,58 +59,67 @@
 
     <section id="how-to-screen" class="screen">
       <div class="panel">
-        <h2>Nasıl Oynanır</h2>
+        <h2 data-i18n="howToPlay">Nasıl Oynanır</h2>
         <ul class="rules">
-          <li>Görevi oku.</li>
-          <li>Süre dolmadan doğru seçimi yap.</li>
-          <li>Her doğru cevap +1 puan.</li>
-          <li>Yanlış cevap veya süre bitimi oyunu bitirir.</li>
-          <li>Her 10 puanda oyun hızlanır.</li>
+          <li data-i18n="ruleRead">Görevi oku.</li>
+          <li data-i18n="ruleChoose">Süre dolmadan doğru seçimi yap.</li>
+          <li data-i18n="ruleScore">Her doğru cevap +1 puan.</li>
+          <li data-i18n="ruleEnd">Yanlış cevap veya süre bitimi oyunu bitirir.</li>
+          <li data-i18n="ruleSpeed">Her 10 puanda oyun hızlanır.</li>
         </ul>
-        <button class="btn primary" data-back-menu type="button">Geri</button>
+        <button class="btn primary" data-back-menu type="button" data-i18n="back">Geri</button>
       </div>
     </section>
 
     <section id="settings-screen" class="screen">
       <div class="panel">
-        <h2>Ayarlar</h2>
+        <h2 data-i18n="settings">Ayarlar</h2>
         <label class="toggle-row">
-          <span>Ses</span>
+          <span data-i18n="sound">Ses</span>
+          <span id="sound-status" class="toggle-status">Açık</span>
           <input id="sound-toggle" type="checkbox">
         </label>
         <label class="toggle-row">
-          <span>Titreşim</span>
+          <span data-i18n="vibration">Titreşim</span>
+          <span id="vibration-status" class="toggle-status">Açık</span>
           <input id="vibration-toggle" type="checkbox">
         </label>
-        <button class="btn primary" data-back-menu type="button">Geri</button>
+        <label class="toggle-row">
+          <span data-i18n="language">Dil</span>
+          <select id="language-select" class="language-select">
+            <option value="tr">Türkçe</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <button class="btn primary" data-back-menu type="button" data-i18n="back">Geri</button>
       </div>
     </section>
 
     <section id="game-over-screen" class="screen">
       <div class="panel">
-        <p id="record-label" class="kicker hidden">Yeni Rekor!</p>
-        <h2>Oyun Bitti</h2>
+        <p id="record-label" class="kicker hidden" data-i18n="newRecord">Yeni Rekor!</p>
+        <h2 data-i18n="gameOver">Oyun Bitti</h2>
         <div class="result-grid">
           <div>
-            <span>Final skor</span>
+            <span data-i18n="finalScore">Final skor</span>
             <strong id="final-score">0</strong>
           </div>
           <div>
-            <span>En yüksek skor</span>
+            <span data-i18n="highScore">En yüksek skor</span>
             <strong data-high-score>0</strong>
           </div>
           <div>
-            <span>Maksimum combo</span>
+            <span data-i18n="maxCombo">Maksimum combo</span>
             <strong id="final-max-combo">x0</strong>
           </div>
           <div>
-            <span>Ulaşılan seviye</span>
+            <span data-i18n="reachedLevel">Ulaşılan seviye</span>
             <strong id="final-level">1</strong>
           </div>
         </div>
         <div class="button-stack">
-          <button class="btn primary" id="retry-btn" type="button">Tekrar Dene</button>
-          <button class="btn" data-back-menu type="button">Ana Menü</button>
+          <button class="btn primary" id="retry-btn" type="button" data-i18n="retry">Tekrar Dene</button>
+          <button class="btn" data-back-menu type="button" data-i18n="mainMenu">Ana Menü</button>
         </div>
       </div>
     </section>

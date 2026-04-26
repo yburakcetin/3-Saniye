@@ -483,6 +483,24 @@ h2 {
   accent-color: var(--primary);
 }
 
+.toggle-status {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.language-select {
+  min-width: 128px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+}
+
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
