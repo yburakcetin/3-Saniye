@@ -14,6 +14,7 @@ const CONFIG = {
 const STORAGE_KEYS = {
   highScore: "threeSecondsHighScore",
   sound: "threeSecondsSoundEnabled",
+  music: "threeSecondsMusicEnabled",
   vibration: "threeSecondsVibrationEnabled",
   language: "threeSecondsLanguage"
 };
@@ -29,8 +30,11 @@ const state = {
   roundStartedAt: 0,
   roundLimit: CONFIG.initialTimeLimit,
   soundEnabled: true,
+  musicEnabled: true,
   vibrationEnabled: true,
   audioContext: null,
+  backgroundMusic: null,
+  hasUserInteracted: false,
   swipeCleanup: null,
   currentCombo: 0,
   maxCombo: 0,
@@ -98,6 +102,7 @@ const translations = {
     combo: "Combo",
     level: "Seviye",
     sound: "Ses",
+    music: "Müzik",
     vibration: "Titreşim",
     language: "Dil",
     on: "Açık",
@@ -172,6 +177,7 @@ const translations = {
     combo: "Combo",
     level: "Level",
     sound: "Sound",
+    music: "Music",
     vibration: "Vibration",
     language: "Language",
     on: "On",
@@ -736,6 +742,7 @@ function applyTranslations() {
   });
 
   dom.soundStatus.textContent = translate(state.soundEnabled ? "on" : "off");
+  dom.musicStatus.textContent = translate(state.musicEnabled ? "on" : "off");
   dom.vibrationStatus.textContent = translate(state.vibrationEnabled ? "on" : "off");
   dom.languageSelect.value = state.language;
 
@@ -763,9 +770,11 @@ function getInitialLanguage() {
 function loadSettings() {
   state.highScore = Number(localStorage.getItem(STORAGE_KEYS.highScore) || 0);
   state.soundEnabled = localStorage.getItem(STORAGE_KEYS.sound) !== "false";
+  state.musicEnabled = localStorage.getItem(STORAGE_KEYS.music) !== "false";
   state.vibrationEnabled = localStorage.getItem(STORAGE_KEYS.vibration) !== "false";
   state.language = getInitialLanguage();
   dom.soundToggle.checked = state.soundEnabled;
+  dom.musicToggle.checked = state.musicEnabled;
   dom.vibrationToggle.checked = state.vibrationEnabled;
   dom.languageSelect.value = state.language;
   applyTranslations();
@@ -774,6 +783,7 @@ function loadSettings() {
 
 function saveSettings() {
   localStorage.setItem(STORAGE_KEYS.sound, String(state.soundEnabled));
+  localStorage.setItem(STORAGE_KEYS.music, String(state.musicEnabled));
   localStorage.setItem(STORAGE_KEYS.vibration, String(state.vibrationEnabled));
   localStorage.setItem(STORAGE_KEYS.language, state.language);
 }
@@ -902,7 +912,9 @@ function cleanupCurrentTask() {
 }
 
 function startGame() {
+  state.hasUserInteracted = true;
   unlockAudio();
+  updateBackgroundMusicState();
   playSound("start");
   vibrate(20);
   cleanupCurrentTask();
@@ -1095,6 +1107,55 @@ function playSound(type) {
   }
 }
 
+function initBackgroundMusic() {
+  if (state.backgroundMusic) return;
+  try {
+    state.backgroundMusic = new Audio("assets/audio/Coin_Slot_Dreams.mp3");
+    state.backgroundMusic.loop = true;
+    state.backgroundMusic.volume = 0.25;
+    state.backgroundMusic.preload = "auto";
+  } catch (error) {
+    state.backgroundMusic = null;
+  }
+}
+
+function playBackgroundMusic() {
+  if (!state.musicEnabled || !state.hasUserInteracted) return;
+  initBackgroundMusic();
+  if (!state.backgroundMusic) return;
+
+  const playPromise = state.backgroundMusic.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {});
+  }
+}
+
+function pauseBackgroundMusic() {
+  if (!state.backgroundMusic) return;
+  try {
+    state.backgroundMusic.pause();
+  } catch (error) {
+    // Audio pause failures should not affect the game.
+  }
+}
+
+function updateBackgroundMusicState() {
+  if (state.musicEnabled) {
+    playBackgroundMusic();
+    return;
+  }
+
+  pauseBackgroundMusic();
+}
+
+function toggleMusicSetting(isEnabled) {
+  state.musicEnabled = isEnabled;
+  state.hasUserInteracted = true;
+  saveSettings();
+  applyTranslations();
+  updateBackgroundMusicState();
+}
+
 function vibrate(pattern) {
   if (!state.vibrationEnabled || !navigator.vibrate) return;
   try {
@@ -1126,8 +1187,10 @@ function initDom() {
   dom.motivationMessage = document.getElementById("motivation-message");
   dom.recordLabel = document.getElementById("record-label");
   dom.soundToggle = document.getElementById("sound-toggle");
+  dom.musicToggle = document.getElementById("music-toggle");
   dom.vibrationToggle = document.getElementById("vibration-toggle");
   dom.soundStatus = document.getElementById("sound-status");
+  dom.musicStatus = document.getElementById("music-status");
   dom.vibrationStatus = document.getElementById("vibration-status");
   dom.languageSelect = document.getElementById("language-select");
   dom.highScoreEls = document.querySelectorAll("[data-high-score]");
@@ -1150,6 +1213,10 @@ function bindEvents() {
     applyTranslations();
   });
 
+  dom.musicToggle.addEventListener("change", () => {
+    toggleMusicSetting(dom.musicToggle.checked);
+  });
+
   dom.vibrationToggle.addEventListener("change", () => {
     state.vibrationEnabled = dom.vibrationToggle.checked;
     saveSettings();
@@ -1165,6 +1232,7 @@ function bindEvents() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initDom();
+  initBackgroundMusic();
   bindEvents();
   loadSettings();
   updateGameStats();
