@@ -1,6 +1,7 @@
 const CONFIG = {
   initialTimeLimit: 3000,
-  minTimeLimit: 1000,
+  minTimeLimit: 1200,
+  maxTimeLimit: 3200,
   difficultyStep: 400,
   scorePerDifficultyIncrease: 10,
   feedbackDuration: 250,
@@ -10,6 +11,15 @@ const CONFIG = {
   scorePopupDuration: 640,
   motivationDuration: 900
 };
+
+const LEVEL_CONFIG = [
+  { level: 1, minScore: 0, maxScore: 9, timeLimit: 3000, weights: { easy: 85, medium: 15, hard: 0 } },
+  { level: 2, minScore: 10, maxScore: 24, timeLimit: 2700, weights: { easy: 60, medium: 35, hard: 5 } },
+  { level: 3, minScore: 25, maxScore: 44, timeLimit: 2400, weights: { easy: 40, medium: 45, hard: 15 } },
+  { level: 4, minScore: 45, maxScore: 69, timeLimit: 2100, weights: { easy: 25, medium: 45, hard: 30 } },
+  { level: 5, minScore: 70, maxScore: 99, timeLimit: 1800, weights: { easy: 15, medium: 40, hard: 45 } },
+  { level: 6, minScore: 100, maxScore: Infinity, timeLimit: 1500, weights: { easy: 10, medium: 30, hard: 60 } }
+];
 
 const STORAGE_KEYS = {
   highScore: "threeSecondsHighScore",
@@ -89,6 +99,27 @@ const DIRECTIONS = [
   { name: "aşağı", label: "v", value: "down" }
 ];
 
+const OPPOSITE_DIRECTIONS = {
+  left: "right",
+  right: "left",
+  up: "down",
+  down: "up"
+};
+
+const ALPHABET_WORD_SETS = {
+  tr: ["masa", "araba", "kalem", "zeytin", "defter", "limon", "bulut", "canta", "deniz", "ekran"],
+  en: ["table", "apple", "pencil", "zebra", "cloud", "garden", "screen", "button", "lemon", "window"]
+};
+
+const COLOR_TONES = [
+  { name: "cream", value: "#fff4c2", lightness: 95 },
+  { name: "yellow", value: "#f8d84e", lightness: 78 },
+  { name: "orange", value: "#e9802c", lightness: 56 },
+  { name: "red", value: "#b73a3a", lightness: 42 },
+  { name: "purple", value: "#6d3fa0", lightness: 34 },
+  { name: "navy", value: "#1d3557", lightness: 24 }
+];
+
 const translations = {
   tr: {
     menuDescription: "Her görevi 3 saniye içinde tamamla.",
@@ -139,6 +170,12 @@ const translations = {
       up: "yukarı",
       down: "aşağı"
     },
+    directionLabels: {
+      left: "Sol",
+      right: "Sağ",
+      up: "Yukarı",
+      down: "Aşağı"
+    },
     motivation: {
       5: "Seri başladı!",
       10: "Çok iyi!",
@@ -162,6 +199,12 @@ const translations = {
       oddColorOut: "Eşleşmeyen rengi seç",
       catchBlinker: "Yanıp söneni yakala",
       wordColor: "Kelimenin rengini seç",
+      dontTapNumber: "{number}'e dokunma",
+      findOddNumberOut: "En farklı sayıyı bul",
+      pickFirstAlphabetically: "Harf sırasına göre ilk olanı seç",
+      pickLightestColor: "En açık rengi seç",
+      pickDarkestColor: "En koyu rengi seç",
+      swipeOppositeWay: "Ters yöne kaydır",
       directionSwipe: "{direction} kaydır"
     }
   },
@@ -214,6 +257,12 @@ const translations = {
       up: "up",
       down: "down"
     },
+    directionLabels: {
+      left: "Left",
+      right: "Right",
+      up: "Up",
+      down: "Down"
+    },
     motivation: {
       5: "Combo started!",
       10: "Very good!",
@@ -237,6 +286,12 @@ const translations = {
       oddColorOut: "Choose the mismatched color",
       catchBlinker: "Catch the blinking one",
       wordColor: "Choose the text color",
+      dontTapNumber: "Don't tap {number}",
+      findOddNumberOut: "Find the odd number out",
+      pickFirstAlphabetically: "Pick the first alphabetically",
+      pickLightestColor: "Pick the lightest color",
+      pickDarkestColor: "Pick the darkest color",
+      swipeOppositeWay: "Swipe the opposite way",
       directionSwipe: "Swipe {direction}"
     }
   }
@@ -279,6 +334,14 @@ function makeColorBox(color, isCorrect) {
   button.style.background = color.value;
   button.dataset.color = color.code;
   button.setAttribute("aria-label", getColorName(color.code));
+  return button;
+}
+
+function makeToneBox(tone, isCorrect) {
+  const button = makeOption("", isCorrect, "color-box tone-box");
+  button.style.background = tone.value;
+  button.dataset.tone = tone.name;
+  button.setAttribute("aria-label", tone.name);
   return button;
 }
 
@@ -327,6 +390,10 @@ function getShapeName(type) {
 
 function getDirectionName(value) {
   return translations[state.language]?.directions?.[value] ?? translations.tr.directions[value] ?? value;
+}
+
+function getDirectionLabel(value) {
+  return translations[state.language]?.directionLabels?.[value] ?? translations.tr.directionLabels[value] ?? value;
 }
 
 function getSwipeDirection(diffX, diffY) {
@@ -622,6 +689,20 @@ const tasks = [
     }
   },
   {
+    id: "dont-tap-number",
+    difficulty: "easy",
+    titleKey: "dontTapNumber",
+    title: "",
+    render(area) {
+      const numbers = uniqueNumbers(4, 1, 9);
+      const forbidden = pick(numbers);
+      shuffle(numbers).forEach((number) => {
+        area.appendChild(makeOption(number, number !== forbidden));
+      });
+      return translateTask("dontTapNumber", { number: forbidden });
+    }
+  },
+  {
     id: "missing-number",
     difficulty: "medium",
     titleKey: "missingNumber",
@@ -640,6 +721,48 @@ const tasks = [
       });
 
       return translateTask("missingNumber", { sequence: label });
+    }
+  },
+  {
+    id: "odd-number-out",
+    difficulty: "medium",
+    titleKey: "findOddNumberOut",
+    title: "En farklı sayıyı bul",
+    render(area) {
+      const useParity = Math.random() < 0.5;
+      let numbers;
+      let answer;
+
+      if (useParity) {
+        const evens = uniqueNumbers(3, 3, 16).map((number) => number * 2);
+        answer = randomInt(3, 19) * 2 + 1;
+        numbers = [...evens, answer];
+      } else {
+        const multiples = uniqueNumbers(3, 1, 9).map((number) => number * 5);
+        do {
+          answer = randomInt(6, 49);
+        } while (answer % 5 === 0);
+        numbers = [...multiples, answer];
+      }
+
+      shuffle(numbers).forEach((number) => {
+        area.appendChild(makeOption(number, number === answer));
+      });
+    }
+  },
+  {
+    id: "first-alphabetically",
+    difficulty: "medium",
+    titleKey: "pickFirstAlphabetically",
+    title: "Harf sırasına göre ilk olanı seç",
+    timeModifier: 1.08,
+    render(area) {
+      const locale = state.language === "tr" ? "tr" : "en";
+      const words = shuffle(ALPHABET_WORD_SETS[state.language] || ALPHABET_WORD_SETS.en).slice(0, 4);
+      const answer = [...words].sort((a, b) => a.localeCompare(b, locale))[0];
+      shuffle(words).forEach((word) => {
+        area.appendChild(makeOption(word, word === answer, "word-option"));
+      });
     }
   },
   {
@@ -678,6 +801,32 @@ const tasks = [
     }
   },
   {
+    id: "lightest-color",
+    difficulty: "medium",
+    titleKey: "pickLightestColor",
+    title: "En açık rengi seç",
+    render(area) {
+      const tones = shuffle(COLOR_TONES).slice(0, 4);
+      const answer = tones.reduce((lightest, tone) => (tone.lightness > lightest.lightness ? tone : lightest), tones[0]);
+      shuffle(tones).forEach((tone) => {
+        area.appendChild(makeToneBox(tone, tone === answer));
+      });
+    }
+  },
+  {
+    id: "darkest-color",
+    difficulty: "medium",
+    titleKey: "pickDarkestColor",
+    title: "En koyu rengi seç",
+    render(area) {
+      const tones = shuffle(COLOR_TONES).slice(0, 4);
+      const answer = tones.reduce((darkest, tone) => (tone.lightness < darkest.lightness ? tone : darkest), tones[0]);
+      shuffle(tones).forEach((tone) => {
+        area.appendChild(makeToneBox(tone, tone === answer));
+      });
+    }
+  },
+  {
     id: "catch-blinker",
     difficulty: "hard",
     titleKey: "catchBlinker",
@@ -709,6 +858,25 @@ const tasks = [
       options.forEach((color) => {
         area.appendChild(makeColorBox(color, color.code === textColor.code));
       });
+    }
+  },
+  {
+    id: "opposite-swipe",
+    difficulty: "hard",
+    titleKey: "swipeOppositeWay",
+    title: "Ters yöne kaydır",
+    timeModifier: 1.05,
+    render(area) {
+      const direction = pick(DIRECTIONS);
+      const expectedDirection = OPPOSITE_DIRECTIONS[direction.value];
+      renderSwipePad(area, `${direction.label} ${getDirectionLabel(direction.value)}`, expectedDirection);
+      return translateTask("swipeOppositeWay");
+    },
+    cleanup() {
+      if (state.swipeCleanup) {
+        state.swipeCleanup();
+        state.swipeCleanup = null;
+      }
     }
   },
   {
@@ -794,10 +962,15 @@ function updateHighScoreViews() {
   });
 }
 
-function getTimeLimit() {
-  const steps = Math.floor(state.score / CONFIG.scorePerDifficultyIncrease);
-  const time = CONFIG.initialTimeLimit - steps * CONFIG.difficultyStep;
-  return Math.max(CONFIG.minTimeLimit, time);
+function getLevelConfig(score = state.score) {
+  return LEVEL_CONFIG.find((level) => score >= level.minScore && score <= level.maxScore) || LEVEL_CONFIG[0];
+}
+
+function getTimeLimit(task = state.currentTask) {
+  const level = getLevelConfig(state.score);
+  const modifier = task?.timeModifier || 1;
+  const time = level.timeLimit * modifier;
+  return Math.max(CONFIG.minTimeLimit, Math.min(CONFIG.maxTimeLimit, time));
 }
 
 function calculateScoreGain(combo) {
@@ -808,10 +981,7 @@ function calculateScoreGain(combo) {
 }
 
 function getLevel(score) {
-  if (score >= 50) return 4;
-  if (score >= 25) return 3;
-  if (score >= 10) return 2;
-  return 1;
+  return getLevelConfig(score).level;
 }
 
 function resetSessionStats() {
@@ -866,35 +1036,30 @@ function showMotivation(combo) {
 }
 
 function getDifficultyWeights() {
-  if (state.score < 10) {
-    return { easy: 8, medium: 2, hard: 0 };
-  }
-
-  if (state.score < 25) {
-    return { easy: 4, medium: 5, hard: 1 };
-  }
-
-  return { easy: 2, medium: 4, hard: 4 };
+  return getLevelConfig(state.score).weights;
 }
 
-function pickWeightedTask(pool) {
+function pickWeightedDifficulty() {
   const weights = getDifficultyWeights();
-  const weightedPool = [];
+  const total = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+  let roll = randomInt(1, total);
 
-  pool.forEach((task) => {
-    const weight = weights[task.difficulty] ?? 1;
-    for (let index = 0; index < weight; index += 1) {
-      weightedPool.push(task);
+  for (const [difficulty, weight] of Object.entries(weights)) {
+    roll -= weight;
+    if (roll <= 0) {
+      return difficulty;
     }
-  });
+  }
 
-  return pick(weightedPool.length ? weightedPool : pool);
+  return "easy";
 }
 
 function pickTask() {
   const available = tasks.filter((task) => !state.recentTasks.includes(task.id));
   const pool = available.length ? available : tasks;
-  const task = pickWeightedTask(pool);
+  const difficulty = pickWeightedDifficulty();
+  const difficultyPool = pool.filter((task) => task.difficulty === difficulty);
+  const task = pick(difficultyPool.length ? difficultyPool : pool);
   state.recentTasks.push(task.id);
   while (state.recentTasks.length > CONFIG.maxRecentTasks) {
     state.recentTasks.shift();
